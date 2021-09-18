@@ -1,0 +1,91 @@
+import rolando.*
+
+describe "Tests de hechicería" {
+
+	method initialize() {
+		rolando.hechizoPreferido(espectroMalefico)
+	}
+
+	test "El nivel de hechicería es 56 con espectro maléfico" {
+		assert.equals(56, rolando.nivelDeHechiceria())
+	}
+	
+	test "El nivel de hechicería es el valor de la fuerza oscura, con hechizo anónimo sin poder" {
+		rolando.hechizoPreferido(object { method poder() = 0 } )
+		assert.equals(fuerzaOscura.valor(), rolando.nivelDeHechiceria())
+	}
+	
+	test "El nivel de hechicería es 125 con 'espectro superrecontramalefico muajajaja' " {
+		espectroMalefico.nombre("espectro superrecontramalefico muajajaja")
+		assert.equals(125, rolando.nivelDeHechiceria())
+	}
+	
+	test "El nivel de hechicería es 61 con la ocurrencia de un eclipse" {
+		fuerzaOscura.eclipse()
+		assert.equals(61, rolando.nivelDeHechiceria())
+	}
+	
+	test "Rolando es poderoso porque espectro maléfico" {
+		assert.that(rolando.esPoderoso())
+	}
+	
+	test "Rolando no es poderoso porque hechizo basico" {
+		rolando.hechizoPreferido(hechizoBasico)
+		assert.notThat(rolando.esPoderoso())
+	}
+	
+}
+
+describe "Tests de Lucha" {
+
+	method initialize() {
+		self.agregarTodosLosArtefactosBasicos()
+	}
+	
+	method agregarTodosLosArtefactosBasicos() {
+		rolando.agregarArtefacto(espadaDelDestino)
+		rolando.agregarArtefacto(collarDivino)
+		rolando.agregarArtefacto(mascaraOscura)
+	}
+	
+	method collarCustom(cantidadDePerlas) {
+		return object { method unidadesDeLucha() = cantidadDePerlas }
+	}
+	
+	test "Rolando sin artefactos tiene nivel de lucha 1" {
+		[espadaDelDestino, collarDivino, mascaraOscura].forEach{ artefacto => rolando.quitarArtefacto(artefacto)}
+		assert.equals(1, rolando.valorDeLucha())
+	}
+	
+	test "Rolando con todos los artefactos basicos es de 13" {
+		assert.equals(13, rolando.valorDeLucha())
+	}
+	
+	test "Rolando con todos los artefactos basicos c/collar divino de 3 perlas, es de 11" {
+		collarDivino.cantidadDePerlas(3)
+		assert.equals(11, rolando.valorDeLucha())
+	}
+	
+	test "Rolando con valor base de lucha 8 y todos los artefactos basicos, es de 20" {
+		rolando.valorBaseLucha(8)
+		assert.equals(20, rolando.valorDeLucha())
+	}
+	
+	test "Rolando con todos los artefactos basicos, menos mascara, es de 9" {
+		rolando.quitarArtefacto(mascaraOscura)
+		assert.equals(9, rolando.valorDeLucha())
+	}
+	
+	test "Rolando con todos los artefactos basicos, y un collar nuevo de 2 perlas, es de 15" {
+		rolando.agregarArtefacto(self.collarCustom(2))
+		assert.equals(15, rolando.valorDeLucha())
+	}
+	
+}
+
+describe "Mascara Oscura" {
+	test "Tiene 5 unidades de lucha luego del eclipse" {
+		fuerzaOscura.eclipse()
+		assert.equals(5, mascaraOscura.unidadesDeLucha())
+	}
+}
