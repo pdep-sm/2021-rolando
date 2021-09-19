@@ -49,7 +49,7 @@ describe "Tests de Lucha" {
 	}
 	
 	method collarCustom(cantidadDePerlas) {
-		return object { method unidadesDeLucha() = cantidadDePerlas }
+		return object { method unidadesDeLucha(propietario) = cantidadDePerlas }
 	}
 	
 	test "Rolando sin artefactos tiene nivel de lucha 1" {
@@ -84,8 +84,35 @@ describe "Tests de Lucha" {
 }
 
 describe "Mascara Oscura" {
-	test "Tiene 5 unidades de lucha luego del eclipse" {
+	test "Tiene 5 unidades de lucha para Rolando luego del eclipse" {
 		fuerzaOscura.eclipse()
-		assert.equals(5, mascaraOscura.unidadesDeLucha())
+		assert.equals(5, mascaraOscura.unidadesDeLucha(rolando))
+	}
+}
+
+describe "Lucha y Hechicería avanzada" {
+	method initialize() {
+		self.agregarTodosLosArtefactosBasicos()
+	}
+	
+	method agregarTodosLosArtefactosBasicos() {
+		rolando.agregarArtefacto(espadaDelDestino)
+		rolando.agregarArtefacto(collarDivino)
+		rolando.agregarArtefacto(mascaraOscura)
+		rolando.agregarArtefacto(armadura)
+		rolando.agregarArtefacto(espejoFantastico)
+		armadura.refuerzo(refuerzoNulo)
+	}
+	
+	test "El valor de lucha de Rolando con todos los artefactos básicos es de 20" {
+		assert.equals(20, rolando.valorDeLucha())
+	}
+	
+	test "El valor de lucha de Rolando sólo con el espejo es 1" {
+		rolando.quitarArtefacto(espadaDelDestino)
+		rolando.quitarArtefacto(collarDivino)
+		rolando.quitarArtefacto(mascaraOscura)
+		rolando.quitarArtefacto(armadura)
+		assert.equals(1, rolando.valorDeLucha())
 	}
 }
