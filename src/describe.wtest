@@ -1,9 +1,16 @@
-import rolando.*
+import guerrero.*
+
+const rolando = new Guerrero()
+const espectroMalefico = new HechizoDeLogos()
+const espadaDelDestino = new Arma()
+const mascaraOscura = new Mascara()
+
 
 describe "Tests de hechicería" {
 
 	method initialize() {
 		rolando.hechizoPreferido(espectroMalefico)
+		espectroMalefico.nombre("espectro malefico")
 	}
 
 	test "El nivel de hechicería es 56 con espectro maléfico" {
@@ -84,6 +91,7 @@ describe "Tests de Lucha" {
 }
 
 describe "Mascara Oscura" {
+	
 	test "Tiene 5 unidades de lucha para Rolando luego del eclipse" {
 		fuerzaOscura.eclipse()
 		assert.equals(5, mascaraOscura.unidadesDeLucha(rolando))
@@ -91,6 +99,9 @@ describe "Mascara Oscura" {
 }
 
 describe "Lucha y Hechicería avanzada" {
+	
+	const armadura = new Armadura()
+	
 	method initialize() {
 		self.agregarTodosLosArtefactosBasicos()
 	}
