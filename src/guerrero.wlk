@@ -55,23 +55,33 @@ class Guerrero {
     } 
 }
 
+class Artefacto {
+	var property fechaDeCompra = null
+	const peso
+	
+	method pesoTotal() = 0.max(peso - self.factorDeCorreccion())
+	method factorDeCorreccion() = 1.min((new Date() - fechaDeCompra) / 1000)
+}
+
 /*
  * Ahora, además de las espadas del destino, puede haber otras espadas, como así 
  * también hachas y lanzas, pero todas aportan 3 puntos de 	lucha.
  */
-
-class Arma {
+// TODO el peso base no es 0, el peso adicional es 0
+class Arma inherits Artefacto(peso = 0) {
 	const unidadesDeLucha = 3
 	
 	method unidadesDeLucha(propietario) = unidadesDeLucha
 	method precio() = 5 * unidadesDeLucha
 }
 
-object collarDivino {
+// TODO el peso base no es 0, el peso adicional es 0
+object collarDivino inherits Artefacto(peso = 0){
 	var property cantidadDePerlas = 5
 
 	method unidadesDeLucha(propietario) = cantidadDePerlas
 	method precio() = 2 * cantidadDePerlas
+	override method pesoTotal() = super() + 0.5 * cantidadDePerlas
 }
 
 /*
@@ -92,13 +102,16 @@ object collarDivino {
  * Máscara: 70 monedas, más tantas monedas como fuerza oscura haya al momento de 
  * la transacción, multiplicada por el índice de oscuridad de la máscara.
  */
-class Mascara {
+class Mascara inherits Artefacto {
 	var property indiceDeOscuridad = 1
 	var property poderMinimo = 4
 	
-	method unidadesDeLucha(propietario) = 
-		(fuerzaOscura.valor().div(2) * indiceDeOscuridad).max(poderMinimo)
+	method unidadesDeLucha() = (fuerzaOscura.valor().div(2) * indiceDeOscuridad).max(poderMinimo) 
+	method unidadesDeLucha(propietario) = self.unidadesDeLucha()
+		
 	method precio() = 70 + fuerzaOscura.valor() * indiceDeOscuridad
+	override method pesoTotal() = super() + self.pesoAgregado()
+	method pesoAgregado() = 0.max(self.unidadesDeLucha() - 3)
 }
 
 object fuerzaOscura {
@@ -136,6 +149,13 @@ class HechizoDeLogos {
 	method unidadesDeLucha(propietario) = self.poder()
 	method precio() = self.poder()
 	method precio(armadura) = armadura.valorBase() + self.precio()
+}
+
+class HechizoComercial inherits HechizoDeLogos(multiplicador = 2) {
+	var property porcentaje = 20
+	
+	override method poder() = super() * porcentaje / 100
+	//TODO revisar si hay que heredar unidadesDeLucha/1, precio/0 y precio/1
 }
 
 class LibroDeHechizos {
@@ -225,7 +245,8 @@ hechizos o que sigan siendo únicos?
  - Replantearse la pregunta de la primera entrega acerca de la posibilidad de un 
 libro de hechizo que tenga entre sus hechizos un libro de hechizos.  
  */
-object espejoFantastico {
+// TODO el peso base no es 0, el peso adicional es 0
+object espejoFantastico inherits Artefacto(peso = 0) {
 	const property precio = 90
 	
 	method unidadesDeLucha(propietario) = 
