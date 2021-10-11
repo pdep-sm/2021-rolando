@@ -55,8 +55,37 @@ class Guerrero {
     } 
 }
 
+class NPC inherits Guerrero {
+	var property nivel
+	
+	override method valorDeLucha() = super() * nivel.multiplicador()
+	
+	/** solución con bloques 
+	override method valorDeLucha() = nivel.apply(super())
+	*/
+	
+	/** solución delegando al Nivel 
+	override method valorDeLucha() = nivel.modificarValorLucha(super())
+	*/
+}
+
+class Nivel {
+	const property multiplicador
+	
+	method modificarValorLucha(valor) = multiplicador * valor
+}
+
+const facil = new Nivel(multiplicador = 1)
+const moderado = new Nivel(multiplicador = 2)
+const dificil = new Nivel(multiplicador = 4)
+
+const facil2 = { valorLucha => valorLucha }
+const moderado2 = { valorLucha => valorLucha * 2 }
+const dificil2 = { valorLucha => valorLucha * 4 }
+
+
 class Artefacto {
-	var property fechaDeCompra = null
+	var property fechaDeCompra = new Date()
 	const peso
 	
 	method pesoTotal() = 0.max(peso - self.factorDeCorreccion())
@@ -67,15 +96,13 @@ class Artefacto {
  * Ahora, además de las espadas del destino, puede haber otras espadas, como así 
  * también hachas y lanzas, pero todas aportan 3 puntos de 	lucha.
  */
-// TODO el peso base no es 0, el peso adicional es 0
-class Arma inherits Artefacto(peso = 0) {
+class Arma inherits Artefacto {
 	const unidadesDeLucha = 3
 	
 	method unidadesDeLucha(propietario) = unidadesDeLucha
 	method precio() = 5 * unidadesDeLucha
 }
 
-// TODO el peso base no es 0, el peso adicional es 0
 object collarDivino inherits Artefacto(peso = 0){
 	var property cantidadDePerlas = 5
 
@@ -128,10 +155,8 @@ object hechizoBasico {
 	const property precio = 10
 	
 	method esPoderoso() = false
-	method unidadesDeLucha(propietario) = self.poder()
-	method precio(armadura) = armadura.valorBase() + precio
 }
-
+//----------------------------------------QUE HACEMOOOO????????
 /*
  * Además del maléfico hay muchos otros hechizos a los que llamamos de "logos", 
 * cada uno con su propio nombre. El poder de hechicería es un múltiplo de la 
@@ -139,23 +164,21 @@ object hechizoBasico {
 * variar de hechizo en hechizo. La forma de saber si es poderoso sigue siendo si 
 * su poder es mayor a 15.
 */
-
+ 
 class HechizoDeLogos {
 	var property nombre = ""
 	var property multiplicador = 1
 	
 	method poder() = nombre.length() * multiplicador
 	method esPoderoso() = self.poder() > 15
-	method unidadesDeLucha(propietario) = self.poder()
 	method precio() = self.poder()
-	method precio(armadura) = armadura.valorBase() + self.precio()
 }
 
 class HechizoComercial inherits HechizoDeLogos(multiplicador = 2) {
 	var property porcentaje = 20
 	
 	override method poder() = super() * porcentaje / 100
-	//TODO revisar si hay que heredar unidadesDeLucha/1, precio/0 y precio/1
+	//TODO revisar si hay que heredar precio/0
 }
 
 class LibroDeHechizos {
@@ -190,13 +213,16 @@ class LibroDeHechizos {
  * otros valores).
  */
 
-class Armadura {
+class Armadura inherits Artefacto {
 	var property refuerzo = refuerzoNulo
 	var property valorBase = 2 
 
 	method unidadesDeLucha(propietario) = 
 		valorBase + refuerzo.unidadesDeLucha(propietario)
 	method precio() = refuerzo.precio(self)
+	
+	override method pesoTotal() = super() + refuerzo.peso() 
+	
 }
 
 /*
@@ -216,12 +242,22 @@ class CotaDeMalla {
 	
 	method unidadesDeLucha(propietario) = unidades
 	method precio(armadura) = unidades / 2
+	method peso() = 1
+}
+
+class RefuerzoHechizo {
+	var property hechizo
+	
+	method peso() = if (hechizo.poder().even()) 2 else 1
+	method unidadesDeLucha(propietario) = hechizo.poder()
+	method precio(armadura) = armadura.valorBase() + hechizo.precio() 
 }
 
 /** NULL OBJECT */
 object refuerzoNulo {
 	method unidadesDeLucha(propietario) = 0
 	method precio(armadura) = 2
+	method peso() = 0
 }
 
 /** NULL OBJECT */
@@ -245,7 +281,7 @@ hechizos o que sigan siendo únicos?
  - Replantearse la pregunta de la primera entrega acerca de la posibilidad de un 
 libro de hechizo que tenga entre sus hechizos un libro de hechizos.  
  */
-// TODO el peso base no es 0, el peso adicional es 0
+// No se detalla información del peso, por lo tanto se asume 0
 object espejoFantastico inherits Artefacto(peso = 0) {
 	const property precio = 90
 	

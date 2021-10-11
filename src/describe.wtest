@@ -2,8 +2,8 @@ import guerrero.*
 
 const rolando = new Guerrero()
 const espectroMalefico = new HechizoDeLogos()
-const espadaDelDestino = new Arma()
-const mascaraOscura = new Mascara()
+const espadaDelDestino = new Arma(peso = 3)
+const mascaraOscura = new Mascara(peso = 3)
 
 
 describe "Tests de hechicería" {
@@ -100,7 +100,7 @@ describe "Mascara Oscura" {
 
 describe "Lucha y Hechicería avanzada" {
 	
-	const armadura = new Armadura()
+	const armadura = new Armadura(peso = 10)
 	
 	method initialize() {
 		self.agregarTodosLosArtefactosBasicos()
@@ -127,3 +127,94 @@ describe "Lucha y Hechicería avanzada" {
 		assert.equals(1, rolando.valorDeLucha())
 	}
 }
+
+
+describe "Pesos de artefactos" {
+	
+	const espadaVieja = new Arma(peso = 7, fechaDeCompra = new Date(day = 7, month = 5, year = 2006))
+	const espadaNueva = new Arma(peso = 4)
+	const espadaComun = new Arma(peso = 5, fechaDeCompra = new Date().minusDays(500)) 
+	const mascaraClara = new Mascara(indiceDeOscuridad = 0, peso = 2)
+	const armaduraConCota = new Armadura(refuerzo = new CotaDeMalla(), peso = 10)
+	const armaduraHechizoPar = new Armadura(refuerzo = new RefuerzoHechizo( hechizo = new HechizoComercial(porcentaje=0)), peso = 12)
+	const armaduraHechizoImpar = new Armadura(refuerzo = new RefuerzoHechizo( hechizo = new HechizoDeLogos(nombre = "claro")), peso = 12)
+	
+
+	
+	test "Peso de espada vieja es de 6kg ( 7 - 1 de corrección)" {
+		assert.equals(6, espadaVieja.pesoTotal())
+	}
+	
+	test "Peso de espada nueva de 4kg" {
+		assert.equals(4, espadaNueva.pesoTotal())
+	}
+	
+	test "Peso de espada común de 5kg (de 50 días) y su peso total es de 4.5kg" {
+		assert.equals(4.5, espadaComun.pesoTotal())
+	}
+	
+	test "Peso de máscara oscura de 3kg (y poder minimo 4) con peso total de 4kg" {
+		assert.equals(4, mascaraOscura.pesoTotal())
+	}
+	
+	test "Peso de máscara oscura de 3kg (y poder minimo 4) luego de ocurrido un eclipse, con peso total de 5kg" {
+		fuerzaOscura.eclipse()
+		assert.equals(5, mascaraOscura.pesoTotal())
+	}
+	
+	test "Peso de máscara clara de 2kg (y poder minimo 4) con peso total de 3kg" {
+		assert.equals(3, mascaraClara.pesoTotal())
+	}
+	
+	test "Armadura con Cota de malla pesa 11kg" {
+		assert.equals(11, armaduraConCota.pesoTotal())
+	}
+	
+	test "Armadura con peso 12 y hechizo par, tiene peso total 14" {
+		assert.equals(14, armaduraHechizoPar.pesoTotal())
+	}
+	
+	test "Armadura con peso 12 y hechizo impar, tiene peso total 13" {
+		assert.equals(13, armaduraHechizoImpar.pesoTotal())
+	}
+}
+
+describe "NPCs" {
+	const navi = new NPC(nivel = facil)
+	const ashleyGraham = new NPC(nivel = moderado, valorBaseLucha = 5, artefactos = [mascaraOscura])
+	
+	test "Navi tiene valor de lucha 1" {
+		assert.equals(1, navi.valorDeLucha())
+	}
+	
+	test "Ashley Graham tiene valor de lucha 18" {
+		assert.equals(18, ashleyGraham.valorDeLucha())
+	}
+	
+	test "Ashley Graham cambia la dificultad y su valor de lucha es de 36" {
+		ashleyGraham.nivel(dificil)
+		assert.equals(36, ashleyGraham.valorDeLucha())
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
